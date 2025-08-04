@@ -52,6 +52,18 @@ def atualizar_significado(palavra):
 
 
 
+# Rota DELETE para atualizar o significado de uma palavra existente
+@app.route('/significado/<palavra>', methods=['DELETE'])
+def deletar(palavra):
+
+    if palavra not in dicionario:
+        return 'Palavra não encontrada', 404
+
+    else:
+        del dicionario[palavra] 
+        return f'{palavra} deletada com sucesso do dicionario!', 200
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
