@@ -13,7 +13,8 @@ app = Flask(__name__)
 # -------------------------------
 # Configuração do banco MySQL (Aiven)
 # -------------------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://avnadmin:AVNS_y5iL2M2J8Vl4qFR3SCO@mysql-26d59920-vitorbfp.i.aivencloud.com:10984/defaultdb'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Parâmetros SSL
@@ -57,9 +58,15 @@ dicionario = {
 
 @app.route('/significado/<palavra>', methods=['GET'])
 def get_significado(palavra):
+
+    tempo-inicial=time.time()
     significado = dicionario.get(palavra)
+    tempo-final=time.time()
+
     if significado:
-        return significado  # retorna só o valor, como texto puro
+        return {significado, # retorna só o valor, como texto puro
+                'tempo_de_resposta': tempo_final - tempo_inicial  # Retorna o tempo de resposta
+        }
     else:
         return 'Palavra não encontrada', 404
 
@@ -116,9 +123,17 @@ def deletar(palavra):
 # -------------------------------
 @app.route('/bd/significado/<palavra>', methods=['GET'])
 def get_significado_bd(palavra):
+    
+    tempo-inicial=time.time()
     resultado = PalavraDB.query.filter_by(nome=palavra).first()
+    tempo-final=time.time()
+
+
     if resultado:
-        return resultado.significado
+        return {
+            'significado': resultado.significado,
+            'tempo_de_resposta': tempo_final - tempo_inicial  # Retorna o tempo de resposta
+        }
     else:
         return 'Palavra não encontrada no banco', 404
 
